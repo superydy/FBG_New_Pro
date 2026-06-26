@@ -7110,7 +7110,7 @@ public partial class MainWindow : Window
             BrushFromHex("#8BC7FF"),
             showMarkers: true,
             markerDiameter: 7,
-            markerBrush: BrushFromHex("#D9ECFF"),
+            markerBrush: BrushFromHex("#61F2A2"),
             markerRenderLimit: 10000,
             enablePointHover: true,
             defaultMinX: minDistance,
