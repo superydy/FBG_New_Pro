@@ -1901,21 +1901,23 @@
                                                                 <RowDefinition Height="*" />
                                                             </Grid.RowDefinitions>
                                                             <Grid Grid.Row="0">
-                                                                <Grid.RowDefinitions>
-                                                                    <RowDefinition Height="Auto" />
-                                                                    <RowDefinition Height="6" />
-                                                                    <RowDefinition Height="Auto" />
-                                                                </Grid.RowDefinitions>
-                                                                <TextBlock Grid.Row="0"
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="18" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Grid.Column="0"
+                                                                           MinWidth="150"
                                                                            VerticalAlignment="Center"
                                                                            Foreground="{StaticResource TextPrimaryBrush}"
                                                                            FontSize="15"
                                                                            FontWeight="SemiBold"
                                                                            Text="单光栅温度图" />
-                                                                <WrapPanel Grid.Row="2"
+                                                                <WrapPanel Grid.Column="2"
                                                                            HorizontalAlignment="Right"
                                                                            VerticalAlignment="Center"
-                                                                           ItemHeight="32">
+                                                                           ItemHeight="32"
+                                                                           MinWidth="520">
                                                                     <TextBlock Margin="0,0,6,0"
                                                                                VerticalAlignment="Center"
                                                                                Foreground="{StaticResource TextSecondaryBrush}"
@@ -2111,21 +2113,29 @@
                                                                 <RowDefinition Height="8" />
                                                                 <RowDefinition Height="Auto" />
                                                             </Grid.RowDefinitions>
-                                                            <TextBlock x:Name="ShapeStatusTextBlock"
-                                                                        Grid.Row="0"
-                                                                        MinWidth="0"
-                                                                        Margin="0"
-                                                                        VerticalAlignment="Center"
-                                                                        Foreground="{StaticResource TextSecondaryBrush}"
-                                                                        FontSize="12"
-                                                                        FontWeight="SemiBold"
-                                                                        TextTrimming="CharacterEllipsis"
-                                                                        TextWrapping="Wrap"
-                                                                        Text="等待实时波长数据" />
+                                                            <Grid Grid.Row="0">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*" />
+                                                                    <ColumnDefinition Width="18" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock x:Name="ShapeStatusTextBlock"
+                                                                            Grid.Column="0"
+                                                                            MinWidth="0"
+                                                                            Margin="0"
+                                                                            VerticalAlignment="Center"
+                                                                            Foreground="{StaticResource TextSecondaryBrush}"
+                                                                            FontSize="12"
+                                                                            FontWeight="SemiBold"
+                                                                            TextTrimming="CharacterEllipsis"
+                                                                            TextWrapping="NoWrap"
+                                                                            Text="等待实时波长数据" />
+                                                            </Grid>
                                                             <WrapPanel Grid.Row="2"
                                                                        HorizontalAlignment="Right"
                                                                        VerticalAlignment="Center"
-                                                                       ItemHeight="32">
+                                                                       ItemHeight="34"
+                                                                       MinWidth="360">
                                                                 <TextBlock Margin="0,0,6,0"
                                                                            VerticalAlignment="Center"
                                                                            Foreground="{StaticResource TextSecondaryBrush}"

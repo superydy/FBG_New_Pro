@@ -7109,8 +7109,8 @@ public partial class MainWindow : Window
             "波长 (nm)",
             BrushFromHex("#8BC7FF"),
             showMarkers: true,
-            markerDiameter: 5,
-            markerBrush: BrushFromHex("#8BC7FF"),
+            markerDiameter: 7,
+            markerBrush: BrushFromHex("#D9ECFF"),
             markerRenderLimit: 10000,
             enablePointHover: true,
             defaultMinX: minDistance,
@@ -7535,7 +7535,7 @@ public partial class MainWindow : Window
         if (chartData.ShowMarkers && sampledScreenPoints.Count <= markerRenderLimit)
         {
             double markerSize = chartData.MarkerDiameter;
-            double coverSize = markerSize + 0.0;
+            double coverSize = markerSize + 3.0;
             foreach (Point point in sampledScreenPoints)
             {
                 if (point.X < margins.Left ||
@@ -7563,7 +7563,8 @@ public partial class MainWindow : Window
                     Width = markerSize,
                     Height = markerSize,
                     Fill = chartData.MarkerBrush,
-                    StrokeThickness = 0
+                    Stroke = BrushFromHex("#163B67"),
+                    StrokeThickness = 1
                 };
                 canvas.Children.Add(marker);
                 Canvas.SetLeft(marker, point.X - markerSize / 2);
