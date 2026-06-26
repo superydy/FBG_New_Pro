@@ -1,0 +1,484 @@
+<Window x:Class="DtsMonitor.App.CalibrationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
+        Title="校准页面"
+        Width="1580"
+        Height="920"
+        MinWidth="1280"
+        MinHeight="620"
+        Background="{StaticResource AppBgBrush}"
+        WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <Style x:Key="CalibrationActionButtonStyle" TargetType="Button" BasedOn="{StaticResource AppBaseButtonStyle}">
+            <Setter Property="Background" Value="#153964" />
+            <Setter Property="BorderBrush" Value="#2E6BAF" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+
+        <Style x:Key="CalibrationInputTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource AppTextBoxStyle}">
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="8,2" />
+        </Style>
+
+        <Style x:Key="CalibrationComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource AppComboBoxStyle}">
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="8,0,0,0" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+
+        <Style x:Key="CalibrationContextMenuStyle" TargetType="ContextMenu">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Background" Value="#10284C" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="#3973B0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="3" />
+            <Setter Property="HasDropShadow" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContextMenu">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <StackPanel IsItemsHost="True"
+                                        KeyboardNavigation.DirectionalNavigation="Cycle" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CalibrationMenuItemStyle" TargetType="MenuItem">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="12,7" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="Transparent"
+                                BorderThickness="0"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter ContentSource="Header"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#1D4F86" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CalibrationGridScrollBarStyle" TargetType="ScrollBar">
+            <Setter Property="Width" Value="14" />
+            <Setter Property="Background" Value="#10284C" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Width="{TemplateBinding Width}" Background="#10284C">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="14" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="14" />
+                            </Grid.RowDefinitions>
+                            <RepeatButton Grid.Row="0"
+                                          Command="ScrollBar.LineUpCommand"
+                                          Background="#17365F"
+                                          BorderBrush="#3973B0"
+                                          BorderThickness="1,1,1,0"
+                                          Focusable="False">
+                                <Path Width="7" Height="4" Fill="{StaticResource TextPrimaryBrush}" Data="M 0 4 L 3.5 0 L 7 4 Z" />
+                            </RepeatButton>
+                            <Track x:Name="PART_Track" Grid.Row="1" IsDirectionReversed="True">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand" Background="#10284C" BorderThickness="0" Focusable="False" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Background="#4B88D9" BorderBrush="#9ED0FF" BorderThickness="1">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                        CornerRadius="4" />
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand" Background="#10284C" BorderThickness="0" Focusable="False" />
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                            <RepeatButton Grid.Row="2"
+                                          Command="ScrollBar.LineDownCommand"
+                                          Background="#17365F"
+                                          BorderBrush="#3973B0"
+                                          BorderThickness="1,0,1,1"
+                                          Focusable="False">
+                                <Path Width="7" Height="4" Fill="{StaticResource TextPrimaryBrush}" Data="M 0 0 L 7 0 L 3.5 4 Z" />
+                            </RepeatButton>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ScrollBar" BasedOn="{StaticResource CalibrationGridScrollBarStyle}" />
+
+        <Style x:Key="CalibrationDataGridStyle" TargetType="DataGrid">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGrid">
+                        <Border Background="Transparent"
+                                SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="DG_ScrollViewer"
+                                          Focusable="False">
+                                <ScrollViewer.Template>
+                                    <ControlTemplate TargetType="ScrollViewer">
+                                        <Grid Background="{TemplateBinding Background}">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                            </Grid.RowDefinitions>
+                                            <DataGridColumnHeadersPresenter Grid.Row="0"
+                                                                            Grid.Column="0"
+                                                                            Visibility="{Binding HeadersVisibility, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, ConverterParameter={x:Static DataGridHeadersVisibility.Column}}" />
+                                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                                                    Grid.Row="1"
+                                                                    Grid.Column="0"
+                                                                    CanContentScroll="{TemplateBinding CanContentScroll}" />
+                                            <ScrollBar x:Name="PART_VerticalScrollBar"
+                                                       Grid.Row="1"
+                                                       Grid.Column="0"
+                                                       HorizontalAlignment="Right"
+                                                       Orientation="Vertical"
+                                                       Style="{StaticResource CalibrationGridScrollBarStyle}"
+                                                       Maximum="{TemplateBinding ScrollableHeight}"
+                                                       ViewportSize="{TemplateBinding ViewportHeight}"
+                                                       Value="{Binding VerticalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </ScrollViewer.Template>
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid x:Name="CalibrationWindowRoot"
+          Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="0" />
+            <RowDefinition Height="0" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Background="{StaticResource CardBgBrush}"
+                BorderBrush="{StaticResource BorderBrushPrimary}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="12,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="90" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="74" />
+                    <ColumnDefinition Width="74" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="76" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="72" />
+                    <ColumnDefinition Width="84" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="72" />
+                    <ColumnDefinition Width="96" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0"
+                           Foreground="{StaticResource TextPrimaryBrush}"
+                           FontSize="15"
+                           Text="光开关编号：" />
+                <ComboBox x:Name="ChannelComboBox"
+                          Grid.Column="1"
+                          Height="30"
+                          Style="{StaticResource CalibrationComboBoxStyle}"
+                          ItemContainerStyle="{StaticResource AppComboBoxItemStyle}"
+                          VerticalAlignment="Center"
+                          SelectionChanged="ChannelComboBox_SelectionChanged" />
+
+                <Button x:Name="StartCalibrationInnerButton"
+                        Grid.Column="3"
+                        Height="32"
+                        Style="{StaticResource CalibrationActionButtonStyle}"
+                        Click="StartCalibrationInnerButton_Click"
+                        Content="开始" />
+                <Button x:Name="StopCalibrationInnerButton"
+                        Grid.Column="4"
+                        Height="32"
+                        Margin="8,0,0,0"
+                        Style="{StaticResource CalibrationActionButtonStyle}"
+                        Click="StopCalibrationInnerButton_Click"
+                        Content="停止" />
+
+                <TextBlock Grid.Column="6"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0"
+                           Foreground="{StaticResource TextPrimaryBrush}"
+                           FontSize="15"
+                           Text="校准阈值:" />
+                <TextBox x:Name="ThresholdTextBox"
+                         Grid.Column="7"
+                         Height="30"
+                         Style="{StaticResource CalibrationInputTextBoxStyle}"
+                         Padding="8,2"
+                         VerticalContentAlignment="Center"
+                         Text="0.50" />
+                <Button x:Name="RecalculatePositionsButton"
+                        Grid.Column="8"
+                        Width="152"
+                        Height="32"
+                        Margin="8,0,0,0"
+                        Style="{StaticResource CalibrationActionButtonStyle}"
+                        Click="RecalculatePositionsButton_Click"
+                        Content="光栅位置计算" />
+
+                <Button x:Name="SetCurrentButton"
+                        Grid.Column="10"
+                        Height="32"
+                        Style="{StaticResource CalibrationActionButtonStyle}"
+                        Click="SetCurrentButton_Click"
+                        Content="设置电流" />
+                <TextBox x:Name="CalibrationCurrentTextBox"
+                         Grid.Column="11"
+                         Height="30"
+                         Margin="8,0,0,0"
+                         Style="{StaticResource CalibrationInputTextBoxStyle}"
+                         Padding="8,2"
+                         VerticalContentAlignment="Center" />
+                <TextBlock Grid.Column="12"
+                           VerticalAlignment="Center"
+                           Margin="8,0,0,0"
+                           Foreground="{StaticResource TextSecondaryBrush}"
+                           FontSize="15"
+                           Text="mA" />
+
+                <TextBlock Grid.Column="14"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0"
+                           Foreground="{StaticResource TextPrimaryBrush}"
+                           FontSize="15"
+                           Text="当前电流:" />
+                <Border Grid.Column="15"
+                        Height="30"
+                        Margin="0,0,8,0"
+                        Padding="8,2"
+                        BorderBrush="{StaticResource InputBorderBrush}"
+                        BorderThickness="1"
+                        Background="{StaticResource InputBgBrush}"
+                        CornerRadius="6">
+                    <TextBlock x:Name="CurrentValueTextBlock"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               FontSize="14"
+                               Text="--" />
+                </Border>
+
+                <Button x:Name="SaveCoefficientButton"
+                        Grid.Column="16"
+                        Height="32"
+                        Style="{StaticResource CalibrationActionButtonStyle}"
+                        Click="SaveCoefficientButton_Click"
+                        Content="保存系数" />
+                <TextBlock x:Name="StatusTextBlock"
+                           Grid.Column="18"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           Foreground="{StaticResource TextSecondaryBrush}"
+                           FontSize="13"
+                           Text="等待开始校准" />
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="380" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Background="{StaticResource CardBgBrush}"
+                    BorderBrush="{StaticResource BorderBrushPrimary}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="3">
+                <DataGrid x:Name="CalibrationSensorGrid"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          CanUserResizeColumns="False"
+                          CanUserResizeRows="False"
+                          CanUserSortColumns="False"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="None"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          ItemsSource="{Binding CalibrationRows, RelativeSource={RelativeSource AncestorType=Window}}"
+                          SelectionUnit="FullRow"
+                          SelectionMode="Single"
+                          SelectionChanged="CalibrationSensorGrid_SelectionChanged"
+                          PreviewKeyDown="CalibrationSensorGrid_PreviewKeyDown"
+                          Background="{StaticResource CardBgBrush}"
+                          Foreground="{StaticResource TextPrimaryBrush}"
+                          BorderThickness="0"
+                          RowBackground="#0D2344"
+                          AlternatingRowBackground="#133055"
+                          AlternationCount="2"
+                          HorizontalGridLinesBrush="#2E5A8F"
+                          VerticalGridLinesBrush="#2E5A8F"
+                          FontSize="14"
+                          RowHeight="34"
+                          ColumnHeaderHeight="36"
+                          Style="{StaticResource CalibrationDataGridStyle}"
+                          IsReadOnly="True">
+                    <DataGrid.ContextMenu>
+                        <ContextMenu Style="{StaticResource CalibrationContextMenuStyle}"
+                                     Opened="CalibrationSensorGridContextMenu_Opened"
+                                     Closed="CalibrationSensorGridContextMenu_Closed">
+                            <MenuItem Header="删除该条"
+                                      Style="{StaticResource CalibrationMenuItemStyle}"
+                                      Click="DeleteCalibrationRowMenuItem_Click" />
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                    <DataGrid.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                        </Style>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <EventSetter Event="PreviewMouseRightButtonDown" Handler="CalibrationSensorGridRow_PreviewMouseRightButtonDown" />
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#2A6FC2" />
+                                    <Setter Property="Foreground" Value="#FFFFFF" />
+                                    <Setter Property="BorderBrush" Value="#B8E0FF" />
+                                    <Setter Property="BorderThickness" Value="1" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="#112B4D" />
+                            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushPrimary}" />
+                            <Setter Property="BorderThickness" Value="0,0,1,1" />
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                        </Style>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushPrimary}" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                            <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#2A6FC2" />
+                                    <Setter Property="Foreground" Value="#FFFFFF" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="58" Header="序号" Binding="{Binding Index}" />
+                        <DataGridTextColumn Width="86" Header="采样点" Binding="{Binding SamplePoint}" />
+                        <DataGridTextColumn Width="126" Header="传感器位置" Binding="{Binding PositionText}" />
+                        <DataGridTextColumn Width="*" MinWidth="92" Header="波长序号" Binding="{Binding WaveIndex}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <Border Grid.Column="2"
+                    Background="{StaticResource CardBgBrush}"
+                    BorderBrush="{StaticResource BorderBrushPrimary}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="12">
+                <Grid>
+                    <Canvas x:Name="CalibrationChartCanvas"
+                            Background="#071C38"
+                            SizeChanged="CalibrationChartCanvas_SizeChanged"
+                            MouseWheel="CalibrationChartCanvas_MouseWheel"
+                            MouseLeftButtonDown="CalibrationChartCanvas_MouseLeftButtonDown"
+                            MouseMove="CalibrationChartCanvas_MouseMove"
+                            MouseLeftButtonUp="CalibrationChartCanvas_MouseLeftButtonUp"
+                            MouseLeave="CalibrationChartCanvas_MouseLeave"
+                            MouseRightButtonDown="CalibrationChartCanvas_MouseRightButtonDown">
+                        <Image x:Name="CalibrationChartImage"
+                               Stretch="Fill"
+                               IsHitTestVisible="False"
+                               SnapsToDevicePixels="True" />
+                        <wfi:WindowsFormsHost x:Name="CalibrationChartHost" />
+                    </Canvas>
+                    <StackPanel x:Name="LegendPanel"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Margin="0,8,8,0"
+                                Visibility="Collapsed"
+                                Background="#CC10284C" />
+                </Grid>
+            </Border>
+        </Grid>
+
+        <TextBlock x:Name="StatusTextBlockLegacy"
+                   Grid.Row="2"
+                   Panel.ZIndex="2"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Top"
+                   Margin="0,0,8,0"
+                   Foreground="{StaticResource TextSecondaryBrush}"
+                   FontSize="13"
+                   Visibility="Collapsed"
+                   Text="等待开始校准。" />
+    </Grid>
+</Window>

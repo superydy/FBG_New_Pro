@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>HG-FBG.DeviceWorker</AssemblyName>
+    <Product>HG-FBG</Product>
+    <Description>HG-FBG device worker</Description>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>..\DtsMonitor.App\bin\$(Configuration)\net10.0-windows\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.9" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\DtsMonitor.App\Models\TelemetryModels.cs" Link="Models\TelemetryModels.cs" />
+    <Compile Include="..\DtsMonitor.App\Models\AlarmConfigurationModels.cs" Link="Models\AlarmConfigurationModels.cs" />
+    <Compile Include="..\DtsMonitor.App\Models\ZoneParameterItem.cs" Link="Models\ZoneParameterItem.cs" />
+    <Compile Include="..\DtsMonitor.App\Models\MultiDeviceModels.cs" Link="Models\MultiDeviceModels.cs" />
+    <Compile Include="..\DtsMonitor.App\Models\IpcModels.cs" Link="Models\IpcModels.cs" />
+    <Compile Include="..\DtsMonitor.App\Services\MonitoringService.cs" Link="Services\MonitoringService.cs" />
+    <Compile Include="..\DtsMonitor.App\Services\NativeBridge.cs" Link="Services\NativeBridge.cs" />
+    <Compile Include="..\DtsMonitor.App\Services\SnapshotStore.cs" Link="Services\SnapshotStore.cs" />
+    <Compile Include="..\DtsMonitor.App\Services\AppLogger.cs" Link="Services\AppLogger.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\native\build\$(Configuration)\*.dll">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

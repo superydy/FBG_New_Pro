@@ -1,0 +1,33 @@
+# IDE
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# .NET
+**/bin/
+**/obj/
+
+# Native/CMake
+native/build/
+*.ilk
+*.pdb
+*.ipdb
+*.iobj
+*.exp
+*.lib
+
+# Local runtime data
+*.db
+*.db-shm
+*.db-wal
+*.log
+dts_debug_log.txt
+wave_diagnostics_ch*.csv
+/releases/
+
+# OS
+Thumbs.db
+Desktop.ini

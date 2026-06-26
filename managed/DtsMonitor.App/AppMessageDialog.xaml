@@ -1,0 +1,68 @@
+﻿<Window x:Class="DtsMonitor.App.AppMessageDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="提示"
+        Width="420"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="Transparent"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ShowInTaskbar="False">
+    <Border Background="#0A2142"
+            BorderBrush="#3E74AE"
+            BorderThickness="1"
+            CornerRadius="10"
+            Padding="18"
+            SnapsToDevicePixels="True">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="14" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="18" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Text="{Binding DialogTitle}"
+                       Foreground="#E9F5FF"
+                       FontSize="18"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center" />
+
+            <TextBlock Grid.Row="2"
+                       Text="{Binding MessageText}"
+                       TextWrapping="Wrap"
+                       Foreground="#BFE1FF"
+                       FontSize="14"
+                       LineHeight="22" />
+
+            <StackPanel Grid.Row="4"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <Button x:Name="CancelActionButton"
+                        Width="96"
+                        Height="36"
+                        Margin="0,0,10,0"
+                        Background="#18355F"
+                        BorderBrush="#36689D"
+                        BorderThickness="1"
+                        Foreground="#E9F5FF"
+                        Content="取消"
+                        Click="CancelActionButton_Click" />
+                <Button x:Name="ConfirmActionButton"
+                        Width="96"
+                        Height="36"
+                        Background="#1E5FA8"
+                        BorderBrush="#4B88D9"
+                        BorderThickness="1"
+                        Foreground="White"
+                        Content="确定"
+                        Click="ConfirmActionButton_Click" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
+

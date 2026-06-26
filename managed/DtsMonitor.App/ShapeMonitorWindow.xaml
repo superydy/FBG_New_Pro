@@ -1,0 +1,242 @@
+<Window x:Class="DtsMonitor.App.ShapeMonitorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ShapeView - 形状监测"
+        Height="820"
+        Width="1280"
+        MinHeight="640"
+        MinWidth="980"
+        WindowStartupLocation="CenterOwner"
+        Background="#F4F6FA"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
+    <Window.Resources>
+        <Style x:Key="ShapeButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="36" />
+            <Setter Property="MinWidth" Value="112" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Background" Value="#E8EEF7" />
+            <Setter Property="BorderBrush" Value="#BAC7D8" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style x:Key="SmallInputStyle" TargetType="TextBox">
+            <Setter Property="Width" Value="86" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="6,2" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#C5CEDA" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style x:Key="PanelTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#202936" />
+        </Style>
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="#374151" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#FBFCFE" BorderBrush="#D8DEE8" BorderThickness="0,0,0,1" Padding="14,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.05*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="0.95*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Style="{StaticResource PanelTitleStyle}" Text="运行控制" />
+                        <StackPanel Margin="0,8,0,0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button x:Name="RunToggleButton"
+                                    Width="132"
+                                    Height="46"
+                                    Background="#FF4B13"
+                                    BorderBrush="#A63819"
+                                    Foreground="White"
+                                    FontSize="20"
+                                    FontWeight="Bold"
+                                    Content="停止"
+                                    Click="RunToggleButton_Click" />
+                            <TextBlock x:Name="DetectionTextBlock"
+                                       Margin="28,0,0,0"
+                                       VerticalAlignment="Center"
+                                       FontSize="17"
+                                       FontWeight="SemiBold"
+                                       Foreground="#2F9E44"
+                                       Text="等待实时数据" />
+                            <TextBlock Margin="34,0,0,0" Style="{StaticResource LabelStyle}" FontWeight="SemiBold" Text="状态:" />
+                            <TextBlock x:Name="PitTextBlock"
+                                       Margin="8,0,0,0"
+                                       VerticalAlignment="Center"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="#32436A"
+                                       Text="--" />
+                            <TextBlock Margin="34,0,0,0" Style="{StaticResource LabelStyle}" FontWeight="SemiBold" Text="详情:" />
+                            <TextBlock x:Name="DetailTextBlock"
+                                       Margin="8,0,0,0"
+                                       VerticalAlignment="Center"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="#2F9E44"
+                                       Text="--" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2">
+                        <TextBlock Style="{StaticResource PanelTitleStyle}" Text="索引参数" />
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="28" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="28" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Style="{StaticResource LabelStyle}" Text="起始索引" />
+                            <TextBox x:Name="StartIndexTextBox" Grid.Column="2" Style="{StaticResource SmallInputStyle}" Text="0" />
+                            <TextBlock Grid.Column="4" Style="{StaticResource LabelStyle}" Text="结束索引" />
+                            <TextBox x:Name="EndIndexTextBox" Grid.Column="6" Style="{StaticResource SmallInputStyle}" Text="" />
+                            <TextBlock Grid.Column="8" Style="{StaticResource LabelStyle}" Text="配对间隔" />
+                            <TextBox x:Name="PairOffsetTextBox" Grid.Column="10" Style="{StaticResource SmallInputStyle}" Text="" />
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="4">
+                        <TextBlock Style="{StaticResource PanelTitleStyle}" Text="参考数据" />
+                        <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
+                            <Button Style="{StaticResource ShapeButtonStyle}" Background="#B8F5B0" Content="保存当前帧为参考" Click="SaveReferenceButton_Click" />
+                            <Button Margin="18,0,0,0" Style="{StaticResource ShapeButtonStyle}" Content="清除参考" Click="ClearReferenceButton_Click" />
+                            <TextBlock x:Name="ReferenceStatusTextBlock"
+                                       Margin="22,0,0,0"
+                                       VerticalAlignment="Center"
+                                       FontSize="15"
+                                       FontWeight="SemiBold"
+                                       Foreground="#2F9E44"
+                                       Text="未保存参考" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+
+                <Border Grid.Column="2" Background="#D7DEE7" BorderBrush="#C8D2DF" BorderThickness="1">
+                    <Grid>
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Foreground="#52606F"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Text="实时形状监测" />
+                        <Border Height="14" VerticalAlignment="Bottom" Background="#C8D2DF" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="14,14,14,8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="#FBFCFE" BorderBrush="#D8DEE8" BorderThickness="1" Padding="12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="34" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="34" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="34" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <CheckBox x:Name="AutoScaleCheckBox" Grid.Column="0" VerticalAlignment="Center" FontSize="14" Content="自动缩放" IsChecked="True" />
+                    <TextBlock Grid.Column="2" Style="{StaticResource LabelStyle}" Text="Y轴" />
+                    <TextBox x:Name="YAxisTextBox" Grid.Column="4" Style="{StaticResource SmallInputStyle}" Text="0.10" />
+                    <TextBlock Grid.Column="6" Style="{StaticResource LabelStyle}" Text="X轴" />
+                    <TextBox x:Name="XAxisTextBox" Grid.Column="8" Style="{StaticResource SmallInputStyle}" Text="20.00" />
+                    <TextBlock Grid.Column="10" Style="{StaticResource LabelStyle}" Text="光栅距(m)" />
+                    <TextBox x:Name="GratingDistanceTextBox" Grid.Column="12" Style="{StaticResource SmallInputStyle}" Text="0.003" />
+                    <TextBlock Grid.Column="14" Style="{StaticResource LabelStyle}" Text="平滑窗口" />
+                    <TextBox x:Name="SmoothWindowTextBox" Grid.Column="16" Style="{StaticResource SmallInputStyle}" Text="7" />
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="White" BorderBrush="#D0D7E2" BorderThickness="1">
+                    <Canvas x:Name="ShapeCanvas" Background="White" ClipToBounds="True" SizeChanged="ShapeCanvas_SizeChanged" />
+                </Border>
+                <Border Grid.Column="2" Background="White" BorderBrush="#D0D7E2" BorderThickness="1">
+                    <Canvas x:Name="CurvatureCanvas" Background="White" ClipToBounds="True" SizeChanged="CurvatureCanvas_SizeChanged" />
+                </Border>
+            </Grid>
+        </Grid>
+
+        <Border Grid.Row="2" Background="#FBFCFE" BorderBrush="#D8DEE8" BorderThickness="0,1,0,0" Padding="10,0">
+            <DockPanel LastChildFill="False">
+                <TextBlock x:Name="FooterTextBlock"
+                           DockPanel.Dock="Left"
+                           VerticalAlignment="Center"
+                           FontSize="15"
+                           FontWeight="SemiBold"
+                           Foreground="#374151"
+                           Text="时间: --  FBG数量: --" />
+                <TextBlock x:Name="MetricTextBlock"
+                           DockPanel.Dock="Right"
+                           VerticalAlignment="Center"
+                           FontSize="15"
+                           FontWeight="SemiBold"
+                           Foreground="#374151"
+                           Text="最大挠度: --" />
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
