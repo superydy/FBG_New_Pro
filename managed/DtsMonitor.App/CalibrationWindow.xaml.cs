@@ -687,8 +687,10 @@ public partial class CalibrationWindow : Window
             int rawSamplePoint = result.SensorPositionsRaw[i];
             float sensorPositionM = rawSamplePoint * positionScaleToMeters;
             int rawWaveIndex = i < rawWaveIndexes.Length ? rawWaveIndexes[i] : 0;
-            int waveIndex = InferDisplayWaveIndexFromWaveData(rawSamplePoint) ??
-                            NormalizeWaveIndexForDisplay(rawWaveIndex, rawWaveIndexesAreOneBased);
+            bool hasRawWaveIndex = i < rawWaveIndexes.Length && rawWaveIndex >= 0;
+            int waveIndex = hasRawWaveIndex
+                ? NormalizeWaveIndexForDisplay(rawWaveIndex, rawWaveIndexesAreOneBased)
+                : InferDisplayWaveIndexFromWaveData(rawSamplePoint) ?? 1;
 
             rows.Add(new CalibrationRowItem
             {

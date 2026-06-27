@@ -1901,75 +1901,97 @@
                                                                 <RowDefinition Height="*" />
                                                             </Grid.RowDefinitions>
                                                             <Grid Grid.Row="0">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="Auto" />
-                                                                    <ColumnDefinition Width="18" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <TextBlock Grid.Column="0"
-                                                                           MinWidth="150"
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="8" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                </Grid.RowDefinitions>
+                                                                <TextBlock Grid.Row="0"
                                                                            VerticalAlignment="Center"
                                                                            Foreground="{StaticResource TextPrimaryBrush}"
                                                                            FontSize="15"
                                                                            FontWeight="SemiBold"
                                                                            Text="单光栅温度图" />
-                                                                <WrapPanel Grid.Column="2"
-                                                                           HorizontalAlignment="Right"
-                                                                           VerticalAlignment="Center"
-                                                                           ItemHeight="32"
-                                                                           MinWidth="520">
-                                                                    <TextBlock Margin="0,0,6,0"
+                                                                <Grid Grid.Row="2">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="12" />
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <WrapPanel Grid.Column="0"
+                                                                               HorizontalAlignment="Left"
                                                                                VerticalAlignment="Center"
-                                                                               Foreground="{StaticResource TextSecondaryBrush}"
-                                                                               FontSize="12"
-                                                                               Text="起始" />
-                                                                    <TextBox x:Name="BaselineTemperatureRangeStartTextBox"
-                                                                             Width="76"
-                                                                             Height="28"
-                                                                             Margin="0,0,10,0"
-                                                                             Padding="6,0,6,0"
-                                                                             Style="{StaticResource DialogTextBoxStyle}"
-                                                                             VerticalContentAlignment="Center"
-                                                                             ToolTip="基准温度范围起始位置" />
-                                                                    <TextBlock Margin="0,0,6,0"
-                                                                               VerticalAlignment="Center"
-                                                                               Foreground="{StaticResource TextSecondaryBrush}"
-                                                                               FontSize="12"
-                                                                               Text="结束" />
-                                                                    <TextBox x:Name="BaselineTemperatureRangeEndTextBox"
-                                                                             Width="76"
-                                                                             Height="28"
-                                                                             Margin="0,0,10,0"
-                                                                             Padding="6,0,6,0"
-                                                                             Style="{StaticResource DialogTextBoxStyle}"
-                                                                             VerticalContentAlignment="Center"
-                                                                             ToolTip="基准温度范围结束位置" />
-                                                                    <TextBlock Margin="0,0,6,0"
-                                                                               VerticalAlignment="Center"
-                                                                               Foreground="{StaticResource TextSecondaryBrush}"
-                                                                               FontSize="12"
-                                                                               Text="基准温度" />
-                                                                    <TextBox x:Name="BaselineTemperatureValueTextBox"
-                                                                             Width="76"
-                                                                             Height="28"
-                                                                             Margin="0,0,10,0"
-                                                                             Padding="6,0,6,0"
-                                                                             Style="{StaticResource DialogTextBoxStyle}"
-                                                                             VerticalContentAlignment="Center"
-                                                                             ToolTip="写入系统系数文件的温度基准值" />
-                                                                    <Button Width="114"
-                                                                            Height="30"
-                                                                            Margin="0,0,8,0"
-                                                                            Style="{StaticResource CompactSecondaryButtonStyle}"
-                                                                            Content="写入基准温度"
-                                                                            Click="ApplyBaselineTemperatureRangeButton_Click" />
-                                                                    <Button Width="152"
-                                                                            Height="30"
-                                                                            Padding="12,0"
-                                                                            Style="{StaticResource CompactSecondaryButtonStyle}"
-                                                                            Content="生成温度基准波长"
-                                                                            Click="GenerateBaselineWavelengthButton_Click" />
-                                                                </WrapPanel>
+                                                                               ItemHeight="30">
+                                                                        <StackPanel Orientation="Horizontal"
+                                                                                    Margin="0,0,12,4"
+                                                                                    VerticalAlignment="Center">
+                                                                        <TextBlock Margin="0,0,6,0"
+                                                                                   VerticalAlignment="Center"
+                                                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                                                   FontSize="11"
+                                                                                   Text="起始" />
+                                                                        <TextBox x:Name="BaselineTemperatureRangeStartTextBox"
+                                                                                 Width="76"
+                                                                                 Height="26"
+                                                                                 Padding="6,0,6,0"
+                                                                                 Style="{StaticResource DialogTextBoxStyle}"
+                                                                                 VerticalContentAlignment="Center"
+                                                                                 ToolTip="基准温度范围起始位置" />
+                                                                        </StackPanel>
+                                                                        <StackPanel Orientation="Horizontal"
+                                                                                    Margin="0,0,12,4"
+                                                                                    VerticalAlignment="Center">
+                                                                        <TextBlock Margin="0,0,6,0"
+                                                                                   VerticalAlignment="Center"
+                                                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                                                   FontSize="11"
+                                                                                   Text="结束" />
+                                                                        <TextBox x:Name="BaselineTemperatureRangeEndTextBox"
+                                                                                 Width="76"
+                                                                                 Height="26"
+                                                                                 Padding="6,0,6,0"
+                                                                                 Style="{StaticResource DialogTextBoxStyle}"
+                                                                                 VerticalContentAlignment="Center"
+                                                                                 ToolTip="基准温度范围结束位置" />
+                                                                        </StackPanel>
+                                                                        <StackPanel Orientation="Horizontal"
+                                                                                    Margin="0,0,0,4"
+                                                                                    VerticalAlignment="Center">
+                                                                        <TextBlock Margin="0,0,6,0"
+                                                                                   VerticalAlignment="Center"
+                                                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                                                   FontSize="11"
+                                                                                   Text="基准温度" />
+                                                                        <TextBox x:Name="BaselineTemperatureValueTextBox"
+                                                                                 Width="76"
+                                                                                 Height="26"
+                                                                                 Padding="6,0,6,0"
+                                                                                 Style="{StaticResource DialogTextBoxStyle}"
+                                                                                 VerticalContentAlignment="Center"
+                                                                                 ToolTip="写入系统系数文件的温度基准值" />
+                                                                        </StackPanel>
+                                                                    </WrapPanel>
+                                                                    <StackPanel Grid.Column="2"
+                                                                                Orientation="Horizontal"
+                                                                                HorizontalAlignment="Right"
+                                                                                VerticalAlignment="Top">
+                                                                        <Button Width="116"
+                                                                                Height="28"
+                                                                                Margin="0,0,8,4"
+                                                                                FontSize="12"
+                                                                                Style="{StaticResource CompactSecondaryButtonStyle}"
+                                                                                Content="写入基准温度"
+                                                                                Click="ApplyBaselineTemperatureRangeButton_Click" />
+                                                                        <Button Width="150"
+                                                                                Height="28"
+                                                                                Margin="0,0,0,4"
+                                                                                Padding="8,0"
+                                                                                FontSize="12"
+                                                                                Style="{StaticResource CompactSecondaryButtonStyle}"
+                                                                                Content="生成温度基准波长"
+                                                                                Click="GenerateBaselineWavelengthButton_Click" />
+                                                                    </StackPanel>
+                                                                </Grid>
                                                             </Grid>
                                                             <Canvas x:Name="SingleSensorTemperatureCanvas"
                                                                     Grid.Row="2"

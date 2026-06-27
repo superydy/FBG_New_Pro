@@ -40,8 +40,8 @@ public static class ShapeReconstructionService
             return Invalid(snapshot, "索引范围内的 FBG 点不足。");
         }
 
-        int offset = settings.PairOffset > 0 ? settings.PairOffset : availableCount / 2;
-        int pairCount = Math.Min(offset, availableCount - offset);
+        DualFiberPairing pairing = BuildDualFiberPairing(profile, snapshot, settings, start, availableCount);
+        int pairCount = pairing.PairCount;
         if (pairCount < 2)
         {
             return Invalid(snapshot, "上下光栅配对数量不足。");
@@ -51,12 +51,12 @@ public static class ShapeReconstructionService
         float[] bottomAfter = new float[pairCount];
         float[] topBefore = new float[pairCount];
         float[] bottomBefore = new float[pairCount];
-        float[] sensorPositions = ResolveSensorPositions(profile, snapshot, start, pairCount);
+        float[] sensorPositions = pairing.PairPositionsM;
 
         for (int i = 0; i < pairCount; i++)
         {
-            int topIndex = start + i;
-            int bottomIndex = start + offset + i;
+            int topIndex = pairing.TopIndices[i];
+            int bottomIndex = pairing.BottomIndices[i];
             topAfter[i] = GetFiniteOrNaN(wavelengths, topIndex);
             bottomAfter[i] = GetFiniteOrNaN(wavelengths, bottomIndex);
             topBefore[i] = ResolveReference(profile, referenceTop, topIndex, i, topAfter[i]);
@@ -200,6 +200,116 @@ public static class ShapeReconstructionService
         IsValid = false,
         StatusText = status
     };
+
+    private static DualFiberPairing BuildDualFiberPairing(
+        ShapeSensingProfile? profile,
+        SnapshotModel snapshot,
+        ShapeReconstructionSettings settings,
+        int start,
+        int availableCount)
+    {
+        float[] positions = profile?.SensorPositionsM.Length > 0
+            ? profile.SensorPositionsM
+            : snapshot.SensorPositionsM;
+
+        int offset = settings.PairOffset > 0 ? settings.PairOffset : availableCount / 2;
+        int halfPairCount = Math.Min(offset, availableCount - offset);
+        if (halfPairCount >= 2 && ShouldUseHalfSplitPairing(positions, start, offset, halfPairCount))
+        {
+            int[] top = new int[halfPairCount];
+            int[] bottom = new int[halfPairCount];
+            for (int i = 0; i < halfPairCount; i++)
+            {
+                top[i] = start + i;
+                bottom[i] = start + offset + i;
+            }
+
+            return new DualFiberPairing(top, bottom, ResolvePairPositions(positions, top, bottom));
+        }
+
+        int adjacentPairCount = availableCount / 2;
+        int[] adjacentTop = new int[adjacentPairCount];
+        int[] adjacentBottom = new int[adjacentPairCount];
+        for (int i = 0; i < adjacentPairCount; i++)
+        {
+            adjacentTop[i] = start + i * 2;
+            adjacentBottom[i] = start + i * 2 + 1;
+        }
+
+        return new DualFiberPairing(adjacentTop, adjacentBottom, ResolvePairPositions(positions, adjacentTop, adjacentBottom));
+    }
+
+    private static bool ShouldUseHalfSplitPairing(float[] positions, int start, int offset, int pairCount)
+    {
+        if (pairCount < 2 || positions.Length <= start + offset)
+        {
+            return false;
+        }
+
+        if (!TryGetRange(positions, start, pairCount, out float topMin, out float topMax) ||
+            !TryGetRange(positions, start + offset, pairCount, out float bottomMin, out float bottomMax))
+        {
+            return true;
+        }
+
+        float topSpan = topMax - topMin;
+        float bottomSpan = bottomMax - bottomMin;
+        if (topSpan <= 0f || bottomSpan <= 0f)
+        {
+            return false;
+        }
+
+        float overlap = Math.Min(topMax, bottomMax) - Math.Max(topMin, bottomMin);
+        return overlap >= Math.Min(topSpan, bottomSpan) * 0.5f;
+    }
+
+    private static bool TryGetRange(float[] positions, int start, int count, out float min, out float max)
+    {
+        min = float.PositiveInfinity;
+        max = float.NegativeInfinity;
+        int end = Math.Min(positions.Length, start + count);
+        for (int i = start; i < end; i++)
+        {
+            float position = positions[i];
+            if (!float.IsFinite(position))
+            {
+                continue;
+            }
+
+            min = Math.Min(min, position);
+            max = Math.Max(max, position);
+        }
+
+        return float.IsFinite(min) && float.IsFinite(max);
+    }
+
+    private static float[] ResolvePairPositions(float[] positions, int[] topIndices, int[] bottomIndices)
+    {
+        int pairCount = Math.Min(topIndices.Length, bottomIndices.Length);
+        float[] result = new float[pairCount];
+        for (int i = 0; i < pairCount; i++)
+        {
+            int topIndex = topIndices[i];
+            int bottomIndex = bottomIndices[i];
+            bool hasTop = topIndex < positions.Length && float.IsFinite(positions[topIndex]);
+            bool hasBottom = bottomIndex < positions.Length && float.IsFinite(positions[bottomIndex]);
+            result[i] = hasTop && hasBottom
+                ? 0.5f * (positions[topIndex] + positions[bottomIndex])
+                : hasTop
+                    ? positions[topIndex]
+                    : hasBottom
+                        ? positions[bottomIndex]
+                        : i;
+        }
+
+        EnsureIncreasingPositions(result);
+        return result;
+    }
+
+    private readonly record struct DualFiberPairing(int[] TopIndices, int[] BottomIndices, float[] PairPositionsM)
+    {
+        public int PairCount => Math.Min(TopIndices.Length, BottomIndices.Length);
+    }
 
     private static float[] ResolveSensorPositions(ShapeSensingProfile? profile, SnapshotModel snapshot, int start, int pairCount)
     {

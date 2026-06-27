@@ -2870,8 +2870,13 @@ public partial class MainWindow : Window
         int start = Math.Clamp(settings.StartIndex, 0, wavelengths.Length - 1);
         int end = Math.Clamp(settings.EndIndex == int.MaxValue ? wavelengths.Length - 1 : settings.EndIndex, start, wavelengths.Length - 1);
         int availableCount = end - start + 1;
+        bool useHalfSplit = ShouldUseHalfSplitShapePairing(
+            snapshot.SensorPositionsM.Length > 0 ? snapshot.SensorPositionsM : snapshot.PositionsM,
+            start,
+            settings.PairOffset > 0 ? settings.PairOffset : availableCount / 2,
+            availableCount);
         int offset = settings.PairOffset > 0 ? settings.PairOffset : availableCount / 2;
-        pairCount = Math.Min(offset, availableCount - offset);
+        pairCount = useHalfSplit ? Math.Min(offset, availableCount - offset) : availableCount / 2;
         if (pairCount < 2)
         {
             error = $"{FormatChannelLabel(snapshot.Channel)} 当前传感器数量不足，无法形成上下光栅配对。";
@@ -2882,11 +2887,58 @@ public partial class MainWindow : Window
         bottom = new float[pairCount];
         for (int i = 0; i < pairCount; i++)
         {
-            top[i] = wavelengths[start + i];
-            bottom[i] = wavelengths[start + offset + i];
+            int topIndex = useHalfSplit ? start + i : start + i * 2;
+            int bottomIndex = useHalfSplit ? start + offset + i : start + i * 2 + 1;
+            top[i] = wavelengths[topIndex];
+            bottom[i] = wavelengths[bottomIndex];
         }
 
         return true;
+    }
+
+    private static bool ShouldUseHalfSplitShapePairing(float[] positions, int start, int offset, int availableCount)
+    {
+        int pairCount = Math.Min(offset, availableCount - offset);
+        if (pairCount < 2 || positions.Length <= start + offset)
+        {
+            return false;
+        }
+
+        if (!TryGetPositionRange(positions, start, pairCount, out float topMin, out float topMax) ||
+            !TryGetPositionRange(positions, start + offset, pairCount, out float bottomMin, out float bottomMax))
+        {
+            return true;
+        }
+
+        float topSpan = topMax - topMin;
+        float bottomSpan = bottomMax - bottomMin;
+        if (topSpan <= 0f || bottomSpan <= 0f)
+        {
+            return false;
+        }
+
+        float overlap = Math.Min(topMax, bottomMax) - Math.Max(topMin, bottomMin);
+        return overlap >= Math.Min(topSpan, bottomSpan) * 0.5f;
+    }
+
+    private static bool TryGetPositionRange(float[] positions, int start, int count, out float min, out float max)
+    {
+        min = float.PositiveInfinity;
+        max = float.NegativeInfinity;
+        int end = Math.Min(positions.Length, start + count);
+        for (int i = start; i < end; i++)
+        {
+            float position = positions[i];
+            if (!float.IsFinite(position))
+            {
+                continue;
+            }
+
+            min = Math.Min(min, position);
+            max = Math.Max(max, position);
+        }
+
+        return float.IsFinite(min) && float.IsFinite(max);
     }
     private bool TryGenerateBaselineWavelengthForChannel(int configuredChannel, out string message)
     {
@@ -6773,12 +6825,11 @@ public partial class MainWindow : Window
     private ShapeReconstructionSettings BuildShapeReconstructionSettings(int wavelengthCount)
     {
         int defaultEnd = Math.Max(0, wavelengthCount - 1);
-        int defaultOffset = Math.Max(1, wavelengthCount / 2);
         return new ShapeReconstructionSettings
         {
             StartIndex = 0,
             EndIndex = defaultEnd,
-            PairOffset = defaultOffset,
+            PairOffset = 0,
             Mode = GetSelectedShapeSensingMode(),
             GratingDistanceM = 0.003f,
             NeutralAxisDistanceM = 0.003f,
@@ -6824,6 +6875,7 @@ public partial class MainWindow : Window
             return;
         }
 
+        float trendHalfRange = ResolveStrainDisplayHalfRange(history);
         _singleSensorStrainChartData = BuildSingleSensorTrendChart(
             history,
             "次数",
@@ -6831,8 +6883,8 @@ public partial class MainWindow : Window
             BrushFromHex("#F8C14A"),
             "F0",
             "F2",
-            -StrainDisplayHalfRangeMicro,
-            StrainDisplayHalfRangeMicro,
+            -trendHalfRange,
+            trendHalfRange,
             showZeroLine: true);
 
         DrawChart(SingleSensorStrainCanvas, _singleSensorStrainChartData, _singleSensorStrainViewport);
@@ -6873,6 +6925,7 @@ public partial class MainWindow : Window
             maxDistance = validPositions.DefaultIfEmpty(minDistance + 1f).Max();
         }
 
+        float strainHalfRange = ResolveStrainDisplayHalfRange(axialStrain);
         _strainArrayChartData = new ChartSeriesData(
             positions,
             axialStrain,
@@ -6880,13 +6933,14 @@ public partial class MainWindow : Window
             "轴向应变 (με)",
             BrushFromHex("#F8C14A"),
             showMarkers: true,
-            markerDiameter: 5,
-            markerBrush: BrushFromHex("#F8C14A"),
+            markerDiameter: 7,
+            markerBrush: BrushFromHex("#61F2A2"),
+            markerRenderLimit: 10000,
             enablePointHover: true,
             defaultMinX: minDistance,
             defaultMaxX: Math.Max(minDistance + 1f, maxDistance),
-            defaultMinY: -StrainDisplayHalfRangeMicro,
-            defaultMaxY: StrainDisplayHalfRangeMicro,
+            defaultMinY: -strainHalfRange,
+            defaultMaxY: strainHalfRange,
             xTickFormat: "F2",
             yTickFormat: "F2",
             xTickCount: 6,
@@ -6895,6 +6949,16 @@ public partial class MainWindow : Window
 
         DrawChart(StrainArrayCanvas, _strainArrayChartData, _strainArrayViewport);
         DrawShapeReconstructionZoomChart();
+    }
+
+    private static float ResolveStrainDisplayHalfRange(IEnumerable<float> values)
+    {
+        float maxAbs = values
+            .Where(float.IsFinite)
+            .Select(Math.Abs)
+            .DefaultIfEmpty(0f)
+            .Max();
+        return Math.Max(StrainDisplayHalfRangeMicro, maxAbs * 1.15f);
     }
 
     private float[] ResolveShapeArrayDisplayPositions(SnapshotModel snapshot, int pointCount, ShapeSensingMode mode)
@@ -7075,8 +7139,9 @@ public partial class MainWindow : Window
             "温度 (℃)",
             BrushFromHex("#67DCFF"),
             showMarkers: true,
-            markerDiameter: 5,
-            markerBrush: BrushFromHex("#67DCFF"),
+            markerDiameter: 7,
+            markerBrush: BrushFromHex("#61F2A2"),
+            markerRenderLimit: 10000,
             enablePointHover: true,
             defaultMinX: minDistance,
             defaultMaxX: Math.Max(minDistance + 1f, maxDistance),
